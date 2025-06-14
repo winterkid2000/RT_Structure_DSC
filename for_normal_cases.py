@@ -38,6 +38,21 @@ def main():
 
     for i in tqdm(number, desc = 'Dice Similarity Coefficient 계산 중!'):
 
+        import pydicom
+
+# Load DICOM RT structure file
+ds = pydicom.dcmread("path/to/rtstruct.dcm")
+
+# Access ROI information
+for roi in ds.StructureSetROISequence:
+    print(f"ROI Name: {roi.ROIName}")
+
+# Access contour data
+for contour in ds.ROIContourSequence:
+    for contour_data in contour.ContourSequence:
+        coords = contour_data.ContourData
+        # Process coordinates
+
 
 
 if __name__ == "main":
