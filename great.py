@@ -25,24 +25,33 @@ def get_mask_and_ref(dicom_dir, total_rt_path, utils_rt_path):
 
 def hd95_cal(gt_mask, pred_mask, spacing):
 
-    gt_surface = sitk.LabelContour(sitk.GetImageFromArray(gt_mask.astype(np.uint8)))
-    pred_surface = sitk.LabelContour(sitk.GetImageFromArray(pred_mask.astype(np.uint8)))
+    gt_img = sitk.GetImageFromArray(gt_mask.astype(np.uint8))
+    pred_img = sitk.GetImageFromArray(pred_mask.astype(np.uint8))
+    
+    gt_contour = sitk.LabelContour(gt_img)
+    pred_contour = sitk.LabelContour(pred_img)
+    
+    gt_points = np.array(sitk.GetArrayFromImage(gt_contour)).nonzero()
+    pred_points = np.array(sitk.GetArrayFromImage(pred_contour)).nonzero()
+    
+    if len(gt_points[0]) == 0 or len(pred_points[0]) == 0:
+        return np.nan
 
-    gt_points = np.argwhere(sitk.GetArrayFromImage(gt_surface) > 0)
-    pred_points = np.argwhere(sitk.GetArrayFromImage(pred_surface) > 0)
+    gt_coords = np.stack(gt_points, axis=1) * spacing[::-1]
+    pred_coords = np.stack(pred_points, axis=1) * spacing[::-1]
 
-    if len(gt_points) == 0 or len(pred_points) == 0:
-        return np.nan 
+    dist_matrix = cdist(gt_coords, pred_coords)
+    
+    dist_gt_to_pred = np.min(dist_matrix, axis=1)
+    dist_pred_to_gt = np.min(dist_matrix, axis=0)
 
-    spacing = spacing[::-1] 
-    gt_points = gt_points * spacing
-    pred_points = pred_points * spacing
-
-    dists_gt_to_pred = np.min(cdist(gt_points, pred_points), axis=1)
-    dists_pred_to_gt = np.min(cdist(pred_points, gt_points), axis=1)
-
-    hd95 = np.percentile(np.concatenate([dists_gt_to_pred, dists_pred_to_gt]), 95)
+    hd95 = np.max([
+        np.percentile(dist_gt_to_pred, 95),
+        np.percentile(dist_pred_to_gt, 95)
+    ])
+    
     return hd95
+
 
 def mask_metrics(gt_mask, pred_mask):
 
