@@ -38,7 +38,7 @@ def main():
     print('테스트')
     dicom_path = r''
     total_rt_path = r''
-    mask_total, ref_image = get_mask_and_ref(dicom_dir, total_rt_path)
+    mask_total, ref_image = get_mask_and_ref(dicom_path, total_rt_path)
     mask_coord, ref_image_coord = tester(mask_total, ref_image)
     print(f'마스크: {mask_coord}, CT: {ref_image_coord}')
     yxz, xyz = tester2(mask_total, ref_image)
