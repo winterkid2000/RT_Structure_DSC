@@ -24,7 +24,7 @@ def tester(mask_total, ref_image):
     mask_coord = mask_total.shape
     ref_image_coord = ref_image.GetSize()
     return mask_coord, ref_image_coord
-def tester2(mask_total, ref_image): ##roi mask가 yxz인지 xyz인지 확인, ref_image의 좌표가 xyz라는 가정
+def tester2(mask_total, ref_image): ##roi mask가 yxz인지 xyz인지 확인, numpy가 zyx, ref_image의 좌표가 xyz라는 가정
     sitk1 = sitk.GetImageFromArray(np.transpose(mask_total, (2, 0, 1)).astype(np.uint8))
     sitk1.CopyInformation(ref_image) ##yxz
     yxz = sitk1.GetSize()
