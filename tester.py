@@ -32,7 +32,11 @@ def tester2(mask_total, ref_image): ##roi mask가 yxz인지 xyz인지 확인, nu
     sitk2 = sitk.GetImageFromArray(np.transpose(mask_total, (2, 1, 0)).astype(np.uint8))
     sitk2.CopyInformation(ref_image) ##xyz
     xyz = sitk2.GetSize()
-    return yxz, xyz
+
+    sitk3 = sitk.GetImageFromArray(mask_total.astype(np.uint8))
+    sitk3.Copyinformation(ref_image)
+    zyx = sitk3.GetSize()
+    return yxz, xyz, zyx
 
 def main():
     print('테스트')
@@ -41,8 +45,8 @@ def main():
     mask_total, ref_image = get_mask_and_ref(dicom_path, total_rt_path)
     mask_coord, ref_image_coord = tester1(mask_total, ref_image)
     print(f'마스크: {mask_coord}, CT: {ref_image_coord}')
-    yxz, xyz = tester2(mask_total, ref_image)
-    print(f'yxz: {yxz}, xyz: {xyz}') 
+    yxz, xyz, zyx = tester2(mask_total, ref_image)
+    print(f'yxz: {yxz}, xyz: {xyz}, zyx = {xyz}') 
 
 if __name__ == "__main__":
   main()
