@@ -45,10 +45,10 @@ def mask_metrics(gt_mask, pred_mask):
 
 def surface_metrics(gt_mask, pred_mask, ref_image):
 
-    gt_sitk = sitk.GetImageFromArray(np.transpose(gt_mask, (2, 0, 1)).astype(np.uint8))
+    gt_sitk = sitk.GetImageFromArray(np.transpose(gt_mask, (2, 1, 0)).astype(np.uint8))
     gt_sitk.CopyInformation(ref_image)  
     
-    pred_sitk = sitk.GetImageFromArray(np.transpose(pred_mask, (2, 0, 1)).astype(np.uint8))
+    pred_sitk = sitk.GetImageFromArray(np.transpose(pred_mask, (2, 1, 0)).astype(np.uint8))
     pred_sitk.CopyInformation(ref_image)
     
     hd_filter = sitk.HausdorffDistanceImageFilter()
